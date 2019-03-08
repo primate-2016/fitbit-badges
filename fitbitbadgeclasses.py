@@ -1,4 +1,7 @@
 class FitBitBadgesUser():
+    """
+    A class representing a user of the FitBitBadges app
+    """
 
     def __init__(self):
         pass
@@ -10,6 +13,9 @@ class FitBitBadgesUser():
         pass
 
 class BadgesList():
+    """
+    A class representing all the badges a user of the FitBitBadges app has earned
+    """
 
     def __init__(self):
         pass

@@ -1,0 +1,7 @@
+boto3
+mock
+moto
+pytest
+pep8
+pylint
+requests

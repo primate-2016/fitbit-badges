@@ -101,7 +101,10 @@ def moto_boto_fixture():
     return dynamo_boto_resource
 
 @mock_dynamodb2
-def test_canInstantiateExistingFitBitBadgesUser(moto_boto_fixture):
+def test_canInstantiateExistingUser(moto_boto_fixture):
+    '''
+    Validate that I can get an existing FitBit Badges user from the database
+    '''
     moto_boto_fixture()
     dynamo_client = boto3.resource('dynamodb')
     fitbit_badges_user = FitBitBadgesUser('ABCDEF', dynamo_client, table_name)
@@ -109,6 +112,10 @@ def test_canInstantiateExistingFitBitBadgesUser(moto_boto_fixture):
 
 @mock_dynamodb2
 def test_cantFindUser(moto_boto_fixture):
+    '''
+    Validate what happens if the FitBit User ID does not exist
+    i.e. this is a new user of the FitBit Badges app
+    '''
     moto_boto_fixture()
     dynamo_client = boto3.resource('dynamodb')
     fitbit_badges_user = FitBitBadgesUser('XYZ123', dynamo_client, table_name)

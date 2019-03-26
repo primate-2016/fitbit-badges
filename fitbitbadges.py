@@ -17,7 +17,8 @@ def handler(event, context):
         sys.exit(0)
 
     fitbit_user_id = event['Records'][0]['accountUserId']
-    # instantiate a DynamoDB client object
+    # instantiate a DynamoDB client object - user a resource object
+    # rather than a client because I am going to pass it around a lot
     dynamo_client = boto3.resource('dynamodb')
     # instantiate user class
     dynamo_table = 'wibble'

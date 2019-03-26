@@ -3,6 +3,27 @@ from fitbitbadges import handler
 from moto import mock_dynamodb2
 import boto3
 
+
+# example of what will be passed to lambda from front-end
+valid_event = {
+        "Records": [
+            {
+            "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMjdQRzQiLCJzdWIiOiIzWUxKNlgiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IHJwcm8iLCJleHAiOjE1NTQ2NTQ4MTQsImlhdCI6MTU1MzYxMjE5N30.nDRwtB1BkqABwgoKSpuaYmuW83XLmWL6vbrKOf_5eqE",
+            "expiresIn": "2592000",
+            "accountUserId": "3YLJ6X"
+            }
+        ]
+    }
+
+invalid_events = [{},
+        {
+            "Records": [
+                {
+                }
+            ]
+        }
+    ]
+
 # will need to monkeypatch request etc......
 
 
@@ -104,12 +125,22 @@ def moto_boto_fixture():
         return dynamo_client
     return dynamo_boto_resource
 
-def test_handler():
+def test_handler_with_invalid_events(capsys):
+    for invalid_event in invalid_events:
+        with pytest.raises(SystemExit) as wrapped_err:
+            context = None
+            handler(invalid_event, context)
+        out, err = capsys.readouterr()
+        assert wrapped_err.type == SystemExit
+        assert wrapped_err.value.code == 0
 
-    event = {"Records":[{"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMjdQRzQiLCJzdWIiOiIzWUxKNlgiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IHJwcm8iLCJleHAiOjE1NTQ2NTQ4MTQsImlhdCI6MTU1MzQyNTg5N30.SXHzHpozo8p76txoud_2JpXhVZ1FPM4-Wu9bg89pxeQ","expiresIn":"2592000","accountUserId":"3YLJ6X"}]}
-    context = 'thing'
+
+def test_handler_with_valid_event():
+
+    event = valid_event
+    context = None
     test_output = handler(event, context)
-    assert test_output == 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMjdQRzQiLCJzdWIiOiIzWUxKNlgiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IHJwcm8iLCJleHAiOjE1NTQ2NTQ4MTQsImlhdCI6MTU1MzQyNTg5N30.SXHzHpozo8p76txoud_2JpXhVZ1FPM4-Wu9bg89pxeQ'
+    assert test_output == 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMjdQRzQiLCJzdWIiOiIzWUxKNlgiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IHJwcm8iLCJleHAiOjE1NTQ2NTQ4MTQsImlhdCI6MTU1MzYxMjE5N30.nDRwtB1BkqABwgoKSpuaYmuW83XLmWL6vbrKOf_5eqE'
 
 @mock_dynamodb2
 def test_moto(moto_boto_fixture):
